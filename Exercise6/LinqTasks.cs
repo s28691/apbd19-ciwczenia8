@@ -217,7 +217,12 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task6()
         {
-            IEnumerable<object> result = null;
+            IEnumerable<object> result = from emp in Emps join dept in Depts on emp.Deptno equals dept.Deptno select new
+            {
+                emp.Ename,
+                emp.Job,
+                dept.Dname,
+            };
             return result;
         }
 
