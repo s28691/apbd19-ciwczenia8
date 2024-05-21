@@ -231,17 +231,21 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task7()
         {
-            IEnumerable<object> result = null;
+            IEnumerable<object> result = from emp in Emps group emp by emp.Job into jobGroup select new
+            {
+                Praca = jobGroup.Key,
+                LiczbaPracownikow = jobGroup.Count()
+            };
             return result;
         }
-
+        
         /// <summary>
         ///     Zwróć wartość "true" jeśli choć jeden
         ///     z elementów kolekcji pracuje jako "Backend programmer".
         /// </summary>
         public static bool Task8()
         {
-            bool result = false;
+            bool result = Emps.Any(emp => emp.Job == "Backend programmer");
             return result;
         }
 
