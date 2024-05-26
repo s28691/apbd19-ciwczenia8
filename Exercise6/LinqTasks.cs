@@ -255,7 +255,7 @@ namespace Exercise6
         /// </summary>
         public static Emp Task9()
         {
-            Emp result = null;
+            Emp result = Emps.Where(emp => emp.Job == "Frontend programmer").OrderByDescending(e => e.HireDate).FirstOrDefault();
             return result;
         }
 
@@ -266,10 +266,19 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task10()
         {
-            IEnumerable<object> result = null;
+            var extraRow = new[]
+            {
+                new { Ename = "Brak wartości", Job = (string)null, HireDate = (DateTime?)null }
+            };
+
+            var methodSyntax =
+                Emps
+                    .Select(e => new { e.Ename, e.Job, e.HireDate })
+                    .Union(extraRow);
+
+            IEnumerable<object> result = methodSyntax;
             return result;
         }
-
         /// <summary>
         /// Wykorzystując LINQ pobierz pracowników podzielony na departamenty pamiętając, że:
         /// 1. Interesują nas tylko departamenty z liczbą pracowników powyżej 1
@@ -283,7 +292,17 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task11()
         {
-            IEnumerable<object> result = null;
+            IEnumerable<object> result = Emps.Join(Depts,
+                    emp => emp.Deptno,
+                    dept => dept.Deptno,
+                    (emp, dept) => new { emp, dept })
+                .GroupBy(emp => emp.dept)
+                .Where(group => group.Count() > 1)
+                .Select(group => new
+                {
+                    name = group.Key,
+                    numOfEmployees = group.Count()
+                });
             return result;
         }
 

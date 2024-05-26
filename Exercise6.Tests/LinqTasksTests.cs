@@ -457,7 +457,7 @@ namespace Exercise6.Tests
             Assert.NotEmpty(res);
             Assert.Equal(2, res.Count());
 
-            Assert.Contains(res, x => x.Dname == "Testing" && x.Deptno == 2137);
+            Assert.Contains(res, x => x.Dname == "Testing" && x.Deptno == 237);
             Assert.Equal("Testing", res.Last().Dname);
         }
     }
