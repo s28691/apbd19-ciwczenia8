@@ -1,4 +1,5 @@
-﻿using Exercise6.Models;
+﻿using System.Runtime.InteropServices.JavaScript;
+using Exercise6.Models;
 
 namespace Exercise6
 {
@@ -266,7 +267,7 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task10()
         {
-            var extraRow = new[]
+            var extra = new[]
             {
                 new { Ename = "Brak wartości", Job = (string)null, HireDate = (DateTime?)null }
             };
@@ -274,7 +275,7 @@ namespace Exercise6
             var methodSyntax =
                 Emps
                     .Select(e => new { e.Ename, e.Job, e.HireDate })
-                    .Union(extraRow);
+                    .Union(extra);
 
             IEnumerable<object> result = methodSyntax;
             return result;
@@ -292,17 +293,17 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<object> Task11()
         {
-            IEnumerable<object> result = Emps.Join(Depts,
-                    emp => emp.Deptno,
-                    dept => dept.Deptno,
-                    (emp, dept) => new { emp, dept })
-                .GroupBy(emp => emp.dept)
-                .Where(group => group.Count() > 1)
-                .Select(group => new
+            IEnumerable<object> result = from emp in Emps
+                join dept in Depts on emp.Deptno equals dept.Deptno
+                group emp by dept.Dname
+                into deptGroup
+                where deptGroup.Count() > 1
+                select new
                 {
-                    name = group.Key,
-                    numOfEmployees = group.Count()
-                });
+                    name = deptGroup.Key,
+                    numOfEmployees = deptGroup.Count()
+                };
+            
             return result;
         }
 
@@ -315,7 +316,7 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<Emp> Task12()
         {
-            IEnumerable<Emp> result = null;
+            IEnumerable<Emp> result = Emps.method();
             return result;
         }
 
@@ -328,8 +329,10 @@ namespace Exercise6
         /// </summary>
         public static int Task13(int[] arr)
         {
-            int result = 0;
-            //result=
+            int result = arr.GroupBy(x => x) 
+                .Where(g => g.Count() % 2 != 0) 
+                .Select(g => g.Key) 
+                .Single(); 
             return result;
         }
 
@@ -339,14 +342,22 @@ namespace Exercise6
         /// </summary>
         public static IEnumerable<Dept> Task14()
         {
-            IEnumerable<Dept> result = null;
-            //result =
+            IEnumerable<Dept> result = from dept in Depts
+                join emp in Emps on dept.Deptno equals emp.Deptno into empGroup
+                where empGroup.Count() == 5 || !empGroup.Any()
+                orderby dept.Dname
+                select dept;
             return result;
         }
     }
 
     public static class CustomExtensionMethods
     {
-        //Put your extension methods here
+        public static IEnumerable<Emp> method(this IEnumerable<Emp> emps)
+        {
+            var managers = emps.Where(emp => emps.Any(sub => sub.Mgr == emp));
+            
+            return managers.OrderBy(emp => emp.Ename).ThenByDescending(emp => emp.Salary);
+        }
     }
 }
